@@ -15,7 +15,7 @@ struct Bag {
 }
 
 fn get_input() -> Vec<String> {
-    std::fs::read_to_string("day2_test.txt")
+    std::fs::read_to_string("day2_input.txt")
         .unwrap()
         .lines()
         .map(String::from)
@@ -58,12 +58,7 @@ fn check_games(games: Vec<Game>, bag: Bag) -> i32 {
     games
         .iter()
         .map(|g| {
-            dbg!(&g);
-            if g.red > bag.red || g.green > bag.green || g.blue > bag.blue {
-                0
-            } else {
-                g.id
-            }
+            g.red * g.blue * g.green
         })
         .reduce(|a, b| a + b)
         .unwrap()
