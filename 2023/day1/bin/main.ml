@@ -1,43 +1,3 @@
-
-let max x y = 
-    if x < y then y else x
-;;
-
-let min x y = 
-    if x < y then x else y
-;;
-
-let take s n = 
-    String.sub s 0 (min n (String.length s))
-;;
-
-let skip s n = 
-    let length = String.length s in
-    String.sub s n (length - n)
-;;
-
-let string_of_list lst = 
-    let rec aux str = function
-        | [] -> str
-        | hd :: tl -> aux (str ^ " " ^ hd) tl
-    in
-    "[" ^ aux "" lst ^ " ]"
-;;
-
-let rev x =
-  let len = String.length x in
-  String.init len (fun n -> String.get x (len - n - 1))
-;;
-
-let contains l s = 
-    let rec aux lst s' = 
-        match lst with
-        | [] -> false
-        | hd :: tl -> if hd = s' then true else aux tl s'
-    in
-    aux l s
-;;
-
 let num_of_word s = 
     let number_words = ["one";"two";"three";"four";"five";"six";"seven";"eight";"nine";"zero"] in
     let i = List.find_index (fun x -> x = s) number_words in
@@ -51,7 +11,7 @@ let find key s =
     let i = try Some (Str.search_forward rg s 0) with Not_found -> None in
     match i with
     | None -> [""]
-    | Some i -> [key]
+    | Some _ -> [key]
 ;;
 
 let lex s =
@@ -82,8 +42,8 @@ let read_file fname =
     In_channel.with_open_bin fname In_channel.input_all
 ;;
 
-let rec get_first_digit s =
-let nums = split_on_nums s in
+let get_first_digit s =
+    let nums = split_on_nums s in
     num_of_word (List.nth nums 0)
 ;;
 
