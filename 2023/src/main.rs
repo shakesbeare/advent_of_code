@@ -27,7 +27,7 @@ impl std::fmt::Display for Testdata {
 
 #[derive(Parser, Debug)]
 struct Args {
-    #[arg(short, long, help="Day number to run, -1 to run all")]
+    #[arg(short, long, help="Day number to run, 0 to run all")]
     day: i32,
     
     #[arg(short, long, default_value="input")]
@@ -41,7 +41,10 @@ fn main() {
     let data_suffix = format!("_{}.txt", args.test);
 
     match args.day {
-        -1 => {
+        0 => {
+
+            println!("DAY 1 --- Use `dune exec day1` in ./day1 for day1 results");
+
             let ans = aoc2023::day2::run(format!("day2{}", data_suffix).as_str());
             println!("DAY 3 --- Part 1: {}; Part 2: {}", ans.0, ans.1);
             let ans = aoc2023::day3::run(format!("day3{}", data_suffix).as_str());
