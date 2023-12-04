@@ -1,3 +1,4 @@
+use crate::get_input;
 #[derive(Debug)]
 enum Token {
     Dot,
@@ -8,15 +9,7 @@ enum Token {
 
 type Line = Vec<Token>;
 
-fn get_input() -> Vec<String> {
-    std::fs::read_to_string("day3_input.txt")
-        .unwrap()
-        .lines()
-        .map(String::from)
-        .collect::<Vec<String>>()
-}
-
-fn parse_line(line: &String) -> Line {
+fn parse_line(line: &str) -> Line {
     let mut output = vec![];
     let mut chars = line.chars();
     while let Some(ch) = chars.next() {
@@ -78,7 +71,7 @@ fn get_adjacent_offsets(s: &Token) -> Vec<(isize, isize)> {
     }
 }
 
-fn has_adjacent_symbol(board: &Vec<Line>, coord: (usize, usize)) -> bool {
+fn has_adjacent_symbol(board: &[Line], coord: (usize, usize)) -> bool {
     let Some(line) = board.get(coord.1) else {
         return false;
     };
@@ -114,7 +107,7 @@ fn has_adjacent_symbol(board: &Vec<Line>, coord: (usize, usize)) -> bool {
 }
 
 fn get_gear_numbers(
-    board: &Vec<Line>,
+    board: &[Line],
     coord: (usize, usize),
 ) -> Option<(i32, i32)> {
     let Some(line) = board.get(coord.1) else {
@@ -157,7 +150,6 @@ fn get_gear_numbers(
         }
     }
 
-    dbg!(&adj_nums);
     if adj_nums.len() == 2 {
         // its a gear!
         let nums: Vec<i32> = adj_nums
@@ -177,9 +169,9 @@ fn get_gear_numbers(
     return None;
 }
 
-fn main() {
-    let input = get_input();
-    let board: Vec<Line> = input.iter().map(parse_line).collect();
+pub fn run(filename: &str) -> (i32, i32) {
+    let input = get_input(filename);
+    let board: Vec<Line> = input.iter().map(|l| parse_line(l)).collect();
     let x_max = &board.get(0).unwrap().len();
 
     let mut nums = vec![];
@@ -216,5 +208,5 @@ fn main() {
         t.0 * t.1
     }).sum();
 
-    dbg!(ans, p2);
+    (ans, p2)
 }

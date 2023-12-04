@@ -1,12 +1,5 @@
+use crate::get_input;
 use std::collections::VecDeque;
-
-fn get_input() -> Vec<String> {
-    std::fs::read_to_string("day4_input.txt")
-        .unwrap()
-        .lines()
-        .map(String::from)
-        .collect::<Vec<String>>()
-}
 
 type Card = (i32, Vec<i32>, Vec<i32>);
 
@@ -86,9 +79,6 @@ fn play_game(card_data: Vec<Card>) -> i32 {
     let mut hand: VecDeque<Card> =
         VecDeque::from(card_data.clone());
 
-    let skip = 1000000;
-    let mut count = 0;
-
     while let Some(card) = hand.pop_front() {
         let cards_won = win_scratchcards(&card);
 
@@ -102,24 +92,17 @@ fn play_game(card_data: Vec<Card>) -> i32 {
             hand.push_back(card_n.clone());
             new_card += 1;
         }
-
-        if count >= skip {
-            count = 1;
-            println!("Hand size is {}, cards won: {}, last card; {}", hand.len(), cards_won_total, card.0);
-        } else {
-            count += 1;
-        }
     }
 
     cards_won_total
 }
 
-fn main() {
-    let lines = get_input();
+pub fn run(filename: &str) -> (i32, i32) {
+    let lines = get_input(filename);
     let cards = parse_lines(lines);
     let sum_scores: i32 =
         cards.clone().iter().map(|c| score_card(c.clone())).sum();
     let total_scratchcards: i32 = play_game(cards);
 
-    println!("Part 1: {sum_scores}, Part 2: {total_scratchcards}");
+    (sum_scores, total_scratchcards)
 }

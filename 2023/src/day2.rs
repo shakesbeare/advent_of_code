@@ -1,5 +1,7 @@
 use anyhow::Result;
 
+use crate::get_input;
+
 #[derive(Debug)]
 struct Game {
     id: i32,
@@ -14,17 +16,9 @@ struct Bag {
     blue: i32,
 }
 
-fn get_input() -> Vec<String> {
-    std::fs::read_to_string("day2_input.txt")
-        .unwrap()
-        .lines()
-        .map(String::from)
-        .collect::<Vec<String>>()
-}
 
-fn parse_games() -> Result<Vec<Game>> {
+fn parse_games(lines: Vec<String>) -> Result<Vec<Game>> {
     let mut games = vec![];
-    let lines = get_input();
     for line in lines.iter() {
         if line.is_empty() { break; }
         let mut s = line.split(':');
@@ -54,7 +48,7 @@ fn parse_games() -> Result<Vec<Game>> {
     Ok(games)
 }
 
-fn check_games(games: Vec<Game>, bag: Bag) -> i32 {
+fn check_games_2(games: &[Game]) -> i32 {
     games
         .iter()
         .map(|g| {
@@ -64,14 +58,29 @@ fn check_games(games: Vec<Game>, bag: Bag) -> i32 {
         .unwrap()
 }
 
-fn main() {
-    let Ok(games) = parse_games() else {
+fn check_games_1(games: &[Game], bag: Bag) -> i32 {
+    games
+        .iter()
+        .map(|g| {
+            if g.red > bag.red || g.green > bag.green || g.blue > bag.blue {
+                0
+            } else {
+                g.id
+            }
+        })
+        .reduce(|a, b| a + b)
+        .unwrap()
+}
+
+pub fn run(filename: &str) -> (i32, i32) {
+    let lines = get_input(filename);
+    let Ok(games) = parse_games(lines) else {
         eprintln!("Parse Error");
         std::process::exit(1);
     };
 
-    let sum = check_games(
-        games,
+    let sum_1 = check_games_1(
+        &games,
         Bag {
             red: 12,
             blue: 14,
@@ -79,5 +88,9 @@ fn main() {
         },
     );
 
-    println!("{sum}");
+    let sum_2 = check_games_2(
+        &games,
+    );
+
+    (sum_1, sum_2)
 }
