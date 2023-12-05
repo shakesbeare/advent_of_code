@@ -1,14 +1,7 @@
 use crate::get_input;
-use std::collections::HashSet;
+use std::collections::VecDeque;
 
-#[derive(Debug, Clone)]
-struct Card {
-    id: usize,
-    winning_nums: HashSet<i32>,
-    owned_nums: HashSet<i32>,
-}
-
-// type Card = (i32, Vec<i32>, Vec<i32>);
+type Card = (i32, Vec<i32>, Vec<i32>);
 
 fn parse_lines(input: Vec<String>) -> Vec<Card> {
     let mut cards = vec![];
@@ -22,7 +15,7 @@ fn parse_lines(input: Vec<String>) -> Vec<Card> {
             .unwrap()
             .1
             .trim()
-            .parse::<usize>()
+            .parse::<i32>()
             .unwrap();
 
         // get winning nums
@@ -31,25 +24,25 @@ fn parse_lines(input: Vec<String>) -> Vec<Card> {
             .split(' ')
             .filter(|s| *s != " " && !s.is_empty())
             .map(|s| s.parse::<i32>().unwrap())
-            .collect::<HashSet<i32>>();
+            .collect::<Vec<i32>>();
 
         // get my nums
-        let owned_nums = my_num_str
+        let my_nums = my_num_str
             .trim()
             .split(' ')
             .filter(|s| *s != " " && !s.is_empty())
             .map(|s| s.parse::<i32>().unwrap())
-            .collect::<HashSet<i32>>();
+            .collect::<Vec<i32>>();
 
-        cards.push(Card { id: card_id, winning_nums, owned_nums });
+        cards.push((card_id, winning_nums, my_nums));
     }
 
     cards
 }
 
 fn score_card(card: Card) -> i32 {
-    let winning = card.winning_nums;
-    let mine = card.owned_nums;
+    let winning = card.1;
+    let mine = card.2;
 
     let mut exp = -1;
 
@@ -67,8 +60,8 @@ fn score_card(card: Card) -> i32 {
 }
 
 fn win_scratchcards(card: &Card) -> i32 {
-    let winning = &card.winning_nums;
-    let mine = &card.owned_nums;
+    let winning = &card.1;
+    let mine = &card.2;
 
     let mut cards_won = 0;
 
@@ -83,18 +76,23 @@ fn win_scratchcards(card: &Card) -> i32 {
 
 fn play_game(card_data: Vec<Card>) -> i32 {
     let mut cards_won_total = card_data.len() as i32;
-    let mut appearances: Vec<i32> = vec![1;218];
+    let mut hand: VecDeque<Card> =
+        VecDeque::from(card_data.clone());
 
-    card_data.iter().for_each(|c| {
-        let cards_won =  win_scratchcards(c);
-        let self_appearances = *(appearances.get(c.id - 1).unwrap());
-        
-        for offset in 0..cards_won {
-            appearances[c.id + (offset as usize)] += self_appearances;
+    while let Some(card) = hand.pop_front() {
+        let cards_won = win_scratchcards(&card);
+
+        // cards are 1-indexed, but vecs are 0-indexed, so this
+        // gets the index of the next card
+        let mut new_card = card.0;
+        for _ in 0..cards_won {
+            cards_won_total += 1;
+            let card_n = card_data.get(new_card as usize).unwrap();
+            
+            hand.push_back(card_n.clone());
+            new_card += 1;
         }
-
-        cards_won_total += cards_won * self_appearances;
-    });
+    }
 
     cards_won_total
 }
@@ -103,10 +101,8 @@ pub fn run(filename: &str) -> (i32, i32) {
     let lines = get_input(filename);
     let cards = parse_lines(lines);
     let sum_scores: i32 =
-    cards.clone().iter().map(|c| score_card(c.clone())).sum();
+        cards.clone().iter().map(|c| score_card(c.clone())).sum();
     let total_scratchcards: i32 = play_game(cards);
-
-    assert_eq!(total_scratchcards, 14427616);
 
     (sum_scores, total_scratchcards)
 }

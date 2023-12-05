@@ -31,7 +31,10 @@ struct Args {
     day: i32,
     
     #[arg(short, long, default_value="input")]
-    test: Testdata
+    test: Testdata,
+
+    #[arg(short, long, default_value="default", help="The name of the solution, where multiple are present")]
+    solution: String
 }
 
 
@@ -61,8 +64,16 @@ fn main() {
             println!("DAY 3 --- Part 1: {}; Part 2: {}", ans.0, ans.1);
         }
         4 => {
-            let ans = aoc2023::day4::run(format!("day4{}", data_suffix).as_str());
-            println!("DAY 4 --- Part 1: {}; Part 2: {}", ans.0, ans.1);
+            match args.solution.as_str() {
+                "naive" => {
+                    let ans = aoc2023::day4_naive::run(format!("day4{}", data_suffix).as_str());
+                    println!("DAY 4 --- Part 1: {}; Part 2: {}", ans.0, ans.1);
+                }
+                _ => {
+                    let ans = aoc2023::day4::run(format!("day4{}", data_suffix).as_str());
+                    println!("DAY 4 --- Part 1: {}; Part 2: {}", ans.0, ans.1);
+                }
+            }
         }
         i => println!("Day {} not found", i)
     }
