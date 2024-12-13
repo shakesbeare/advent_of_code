@@ -56,7 +56,7 @@ fn main() {
     let data_suffix = format!("_{}.txt", args.test);
 
     if args.all {
-        let ans = aoc2024::day1::run(format!("day1{}", data_suffix).as_str());
+        let ans = aocYEAR::day1::run(format!("day1{}", data_suffix).as_str());
         println!("DAY 1 --- Part 1: {}; Part 2: {}", ans.0, ans.1);
         std::process::exit(0);
     }
@@ -66,7 +66,7 @@ fn main() {
         std::process::exit(1);
     }) {
         1 => {
-            let ans = aoc2024::day1::run(format!("day1{}", data_suffix).as_str());
+            let ans = aocYEAR::day1::run(format!("day1{}", data_suffix).as_str());
             println!("DAY 1 --- Part 1: {}; Part 2: {}", ans.0, ans.1);
         }
         i => println!("Day {} not found", i),
